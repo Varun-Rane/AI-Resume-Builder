@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar"
 import { resumes } from "~/constants";
 import ResumeCard from "~/components/ResumeCard";
 import { useEffect } from "react";
-import { usePuterStore } from "~/libs/puter";
+import { usePuterStore } from "~/lib/puter";
 import { useNavigate } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
@@ -14,14 +14,16 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-const { auth } = usePuterStore();
+const { auth,isLoading } = usePuterStore();
   const navigate = useNavigate(); 
+useEffect(() => {
+  if (!auth.isAuthenticated && !isLoading) {
+    navigate("/auth?next=/");
+  }
+}, [auth.isAuthenticated, isLoading]);
 
- useEffect ( () => {
-    if(auth.isAuthenticated) navigate("/auth?next=/");
-  }, [auth.isAuthenticated])
 
-  return <main className = "bg-[url('/images/bg-main.svg')] bg-cover">
+  return <main className = "relative min-h-screen bg-gradient overflow-hidden">
       <Navbar />
       <section className="main-section">
         <div className="page-heading">
@@ -31,7 +33,7 @@ const { auth } = usePuterStore();
       
 
       {resumes.length > 0 && (
-        <div className="resume-section">
+        <div className="resumes-section">
           {resumes.map((resume) => (
             <ResumeCard key={resume.id} resume={resume} />
           ))}
